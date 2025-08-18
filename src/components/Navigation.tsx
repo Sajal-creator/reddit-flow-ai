@@ -1,9 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
+import { useAuth } from '@/hooks/useAuth';
+import { Link } from 'react-router-dom';
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { user, signOut } = useAuth();
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border">
@@ -30,8 +33,23 @@ const Navigation = () => {
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center space-x-4">
-            <Button variant="ghost">Sign In</Button>
-            <Button variant="hero" size="lg">Start Free Trial</Button>
+            {user ? (
+              <>
+                <Link to="/dashboard">
+                  <Button variant="ghost">Dashboard</Button>
+                </Link>
+                <Button variant="ghost" onClick={signOut}>Sign Out</Button>
+              </>
+            ) : (
+              <>
+                <Link to="/auth">
+                  <Button variant="ghost">Sign In</Button>
+                </Link>
+                <Link to="/auth">
+                  <Button variant="hero" size="lg">Start Free Trial</Button>
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -54,8 +72,23 @@ const Navigation = () => {
               <a href="#pricing" className="block px-3 py-2 text-muted-foreground hover:text-foreground transition-colors">Pricing</a>
               <a href="#testimonials" className="block px-3 py-2 text-muted-foreground hover:text-foreground transition-colors">Reviews</a>
               <div className="px-3 py-2 space-y-2">
-                <Button variant="ghost" className="w-full justify-start">Sign In</Button>
-                <Button variant="hero" size="lg" className="w-full">Start Free Trial</Button>
+                {user ? (
+                  <>
+                    <Link to="/dashboard">
+                      <Button variant="ghost" className="w-full justify-start">Dashboard</Button>
+                    </Link>
+                    <Button variant="ghost" className="w-full justify-start" onClick={signOut}>Sign Out</Button>
+                  </>
+                ) : (
+                  <>
+                    <Link to="/auth">
+                      <Button variant="ghost" className="w-full justify-start">Sign In</Button>
+                    </Link>
+                    <Link to="/auth">
+                      <Button variant="hero" size="lg" className="w-full">Start Free Trial</Button>
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </div>
