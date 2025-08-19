@@ -56,15 +56,21 @@ export default function RedditCallback() {
 
         if (data.success) {
           setStatus('success');
+          
+          // Store Reddit connection data in localStorage
+          localStorage.setItem('reddit_connected', 'true');
+          localStorage.setItem('reddit_user', JSON.stringify(data.user));
+          localStorage.setItem('reddit_tokens', JSON.stringify(data.tokens));
+          
           toast({
             title: "Successfully Connected!",
-            description: `Connected Reddit account: ${data.username}`,
+            description: `Connected Reddit account: u/${data.user.username}`,
           });
           
-          // Redirect back to dashboard after 2 seconds
+          // Redirect back to dashboard after 3 seconds
           setTimeout(() => {
             navigate('/dashboard');
-          }, 2000);
+          }, 3000);
         } else {
           throw new Error(data.message || 'Unknown error occurred');
         }

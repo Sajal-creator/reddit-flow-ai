@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -8,7 +8,28 @@ import { useToast } from '@/hooks/use-toast';
 export default function RedditConnectionCard() {
   const [isRedditConnected, setIsRedditConnected] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
+  const [redditUser, setRedditUser] = useState<any>(null);
   const { toast } = useToast();
+
+  // Check for existing Reddit connection on component mount
+  useEffect(() => {
+    const connected = localStorage.getItem('reddit_connected');
+    const userData = localStorage.getItem('reddit_user');
+    
+    if (connected === 'true' && userData) {
+      try {
+        const user = JSON.parse(userData);
+        setIsRedditConnected(true);
+        setRedditUser(user);
+      } catch (error) {
+        console.error('Error parsing Reddit user data:', error);
+        // Clear invalid data
+        localStorage.removeItem('reddit_connected');
+        localStorage.removeItem('reddit_user');
+        localStorage.removeItem('reddit_tokens');
+      }
+    }
+  }, []);
 
   function connectToReddit() {
     setIsConnecting(true);
@@ -84,9 +105,38 @@ export default function RedditConnectionCard() {
             </Button>
           </div>
         ) : (
-          <div className="text-sm text-muted-foreground">
-            <p className="text-green-600 font-medium">✓ Your Reddit account is connected and ready!</p>
-            <p className="mt-2">You can now start automating your Reddit growth.</p>
+          <div className="space-y-4">
+            <div className="text-sm text-muted-foreground">
+              <p className="text-green-600 font-medium">✓ Your Reddit account is connected and ready!</p>
+              {redditUser && (
+                <div className="mt-3 p-3 bg-muted rounded-lg">
+                  <p className="font-medium">u/{redditUser.username}</p>
+                  <div className="flex gap-4 text-xs mt-1">
+                    <span>Total Karma: {redditUser.karma || 0}</span>
+                    <span>Link: {redditUser.link_karma || 0}</span>
+                    <span>Comment: {redditUser.comment_karma || 0}</span>
+                  </div>
+                </div>
+              )}
+              <p className="mt-2">You can now start automating your Reddit growth.</p>
+            </div>
+            <Button 
+              onClick={() => {
+                localStorage.removeItem('reddit_connected');
+                localStorage.removeItem('reddit_user');
+                localStorage.removeItem('reddit_tokens');
+                setIsRedditConnected(false);
+                setRedditUser(null);
+                toast({
+                  title: "Disconnected",
+                  description: "Reddit account has been disconnected.",
+                });
+              }}
+              variant="outline"
+              size="sm"
+            >
+              Disconnect Account
+            </Button>
           </div>
         )}
       </CardContent>

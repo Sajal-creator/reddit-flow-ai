@@ -82,8 +82,19 @@ serve(async (req) => {
       JSON.stringify({
         success: true,
         message: 'Reddit account connected successfully',
-        username: userData.name,
-        userId: userData.id
+        user: {
+          id: userData.id,
+          username: userData.name,
+          karma: userData.total_karma || (userData.link_karma + userData.comment_karma),
+          link_karma: userData.link_karma || 0,
+          comment_karma: userData.comment_karma || 0,
+          created_utc: userData.created_utc
+        },
+        tokens: {
+          access_token: tokenData.access_token,
+          refresh_token: tokenData.refresh_token,
+          expires_in: tokenData.expires_in
+        }
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
