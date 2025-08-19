@@ -1,0 +1,95 @@
+import { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { ExternalLink, CheckCircle, AlertCircle } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+
+export default function RedditConnectionCard() {
+  const [isRedditConnected, setIsRedditConnected] = useState(false);
+  const [isConnecting, setIsConnecting] = useState(false);
+  const { toast } = useToast();
+
+  function connectToReddit() {
+    setIsConnecting(true);
+    
+    // Generate a random state parameter for CSRF protection
+    const state = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    localStorage.setItem('reddit_oauth_state', state);
+    
+    const clientId = 'SaEbGocDq6S-Nbjnpaazcw';
+    const redirectUri = 'https://preview--reddit-flow-ai.lovable.app/dashboard/callback';
+    const scopes = 'identity,submit,save,read';
+    
+    const authUrl = `https://www.reddit.com/api/v1/authorize?client_id=${clientId}&response_type=code&state=${state}&redirect_uri=${redirectUri}&duration=permanent&scope=${scopes}`;
+    
+    window.location.href = authUrl;
+  }
+
+  return (
+    <Card className="mb-8">
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle className="text-xl text-foreground flex items-center gap-2">
+              Connect Your Reddit Account
+              {isRedditConnected ? (
+                <Badge variant="default" className="bg-green-500">
+                  <CheckCircle className="w-3 h-3 mr-1" />
+                  Connected
+                </Badge>
+              ) : (
+                <Badge variant="secondary">
+                  <AlertCircle className="w-3 h-3 mr-1" />
+                  Not Connected
+                </Badge>
+              )}
+            </CardTitle>
+            <CardDescription>
+              Connect your Reddit account to start automating your growth and engagement
+            </CardDescription>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent>
+        {!isRedditConnected ? (
+          <div className="space-y-4">
+            <div className="text-sm text-muted-foreground">
+              <p className="mb-2">Required permissions:</p>
+              <ul className="list-disc list-inside space-y-1 text-xs">
+                <li><strong>Identity:</strong> Get your user information</li>
+                <li><strong>Submit:</strong> Submit links and comments</li>
+                <li><strong>Save:</strong> Save posts and comments</li>
+                <li><strong>Read:</strong> Read posts and comments</li>
+              </ul>
+            </div>
+            <Button 
+              onClick={connectToReddit}
+              disabled={isConnecting}
+              variant="hero"
+              size="lg"
+              className="w-full sm:w-auto"
+            >
+              {isConnecting ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  Connecting...
+                </>
+              ) : (
+                <>
+                  <ExternalLink className="mr-2 h-4 w-4" />
+                  Connect to Reddit
+                </>
+              )}
+            </Button>
+          </div>
+        ) : (
+          <div className="text-sm text-muted-foreground">
+            <p className="text-green-600 font-medium">✓ Your Reddit account is connected and ready!</p>
+            <p className="mt-2">You can now start automating your Reddit growth.</p>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}

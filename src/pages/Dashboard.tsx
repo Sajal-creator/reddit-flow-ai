@@ -3,6 +3,7 @@ import { Navigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { LogOut, TrendingUp, MessageCircle, Users, Target } from 'lucide-react';
+import RedditConnectionCard from '@/components/RedditConnectionCard';
 
 export default function Dashboard() {
   const { user, loading, signOut } = useAuth();
@@ -96,6 +97,9 @@ export default function Dashboard() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Reddit Connection Card */}
+        <RedditConnectionCard />
 
         {/* Welcome Card */}
         <Card>
