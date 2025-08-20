@@ -21,9 +21,14 @@ export default function RedditCallback() {
         const error = query.get("error");
         const state = query.get("state");
         
+        console.log('OAuth callback received:', { code: code ? 'present' : 'missing', error, state });
+        
         // Verify state parameter for CSRF protection
         const storedState = localStorage.getItem('reddit_oauth_state');
-        if (state !== storedState) {
+        console.log('State validation:', { received: state, stored: storedState });
+        
+        if (!state || !storedState || state !== storedState) {
+          console.error('State parameter mismatch or missing');
           throw new Error('Invalid state parameter. Possible CSRF attack.');
         }
         
@@ -45,9 +50,14 @@ export default function RedditCallback() {
           throw new Error('No authorization code received');
         }
 
+        console.log('Exchanging code for token...');
+        
         // Call our Supabase Edge Function to exchange code for token
         const { data, error: functionError } = await supabase.functions.invoke('reddit-oauth', {
-          body: { code }
+          body: { 
+            code,
+            redirectUri: `${window.location.origin}/dashboard/callback`
+          }
         });
 
         if (functionError) {

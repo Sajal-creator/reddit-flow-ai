@@ -12,18 +12,22 @@ serve(async (req) => {
   }
 
   try {
-    const { code } = await req.json();
+    const { code, redirectUri } = await req.json();
     
     if (!code) {
       throw new Error('No authorization code provided');
     }
 
-    console.log('Processing Reddit OAuth with code:', code);
+    if (!redirectUri) {
+      throw new Error('No redirect URI provided');
+    }
+
+    console.log('Processing Reddit OAuth with code:', code.substring(0, 10) + '...');
+    console.log('Using redirect URI:', redirectUri);
 
     // Reddit OAuth credentials
     const clientId = 'SaEbGocDq6S-Nbjnpaazcw';
     const clientSecret = 'YRWpayfz9qBi0hABCWRjKm1zXgYsKw';
-    const redirectUri = 'https://preview--reddit-flow-ai.lovable.app/dashboard/callback';
 
     // Encode credentials for Basic Auth
     const encodedCredentials = btoa(`${clientId}:${clientSecret}`);

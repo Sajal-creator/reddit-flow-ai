@@ -34,17 +34,31 @@ export default function RedditConnectionCard() {
   function connectToReddit() {
     setIsConnecting(true);
     
-    // Generate a random state parameter for CSRF protection
-    const state = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-    localStorage.setItem('reddit_oauth_state', state);
-    
-    const clientId = 'SaEbGocDq6S-Nbjnpaazcw';
-    const redirectUri = 'https://preview--reddit-flow-ai.lovable.app/dashboard/callback';
-    const scopes = 'identity,submit,save,read';
-    
-    const authUrl = `https://www.reddit.com/api/v1/authorize?client_id=${clientId}&response_type=code&state=${state}&redirect_uri=${redirectUri}&duration=permanent&scope=${scopes}`;
-    
-    window.location.href = authUrl;
+    try {
+      // Generate a random state parameter for CSRF protection
+      const state = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+      localStorage.setItem('reddit_oauth_state', state);
+      
+      const clientId = 'SaEbGocDq6S-Nbjnpaazcw';
+      // Use current domain for redirect URI
+      const redirectUri = `${window.location.origin}/dashboard/callback`;
+      const scopes = 'identity,submit,save,read';
+      
+      console.log('Starting Reddit OAuth with redirect URI:', redirectUri);
+      console.log('Generated state:', state);
+      
+      const authUrl = `https://www.reddit.com/api/v1/authorize?client_id=${clientId}&response_type=code&state=${state}&redirect_uri=${encodeURIComponent(redirectUri)}&duration=permanent&scope=${scopes}`;
+      
+      window.location.href = authUrl;
+    } catch (error) {
+      console.error('Error starting Reddit OAuth:', error);
+      setIsConnecting(false);
+      toast({
+        title: "Connection Error",
+        description: "Failed to start Reddit connection. Please try again.",
+        variant: "destructive",
+      });
+    }
   }
 
   return (
