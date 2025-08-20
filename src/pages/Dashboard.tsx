@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { LogOut, TrendingUp, MessageCircle, Users, Target } from 'lucide-react';
 import RedditConnectionCard from '@/components/RedditConnectionCard';
+import RedditAnalytics from '@/components/RedditAnalytics';
+import PostAnalyzer from '@/components/PostAnalyzer';
 
 export default function Dashboard() {
   const { user, loading, signOut } = useAuth();
@@ -100,6 +102,11 @@ export default function Dashboard() {
 
         {/* Reddit Connection Card */}
         <RedditConnectionCard />
+
+        {/* Import Components */}
+        <RedditAnalytics />
+        
+        <PostAnalyzer />
 
         {/* Welcome Card */}
         <Card>
